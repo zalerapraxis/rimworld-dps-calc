@@ -9,6 +9,7 @@ namespace rimworld_dps_calc
     class Program
     {
         static List<string> PreviousEntries = new List<string>();
+        private static int index = 0;
 
         static void Main(string[] args)
         {
@@ -29,10 +30,11 @@ namespace rimworld_dps_calc
             Console.Write("Blunt penetration: ");
             var bluntPen = double.Parse(Console.ReadLine());
 
-            Console.Write("Burst shot count: ");
+            Console.Write("Burst shot count - use the first value (1 for non-burst weapons): ");
             var burstcount = double.Parse(Console.ReadLine());
 
-            Console.Write("RPM: ");
+            // 3600 ticks in a minute of realtime, divide that by rpm to get ticks between burst shots
+            Console.Write("RPM (0 for non-burst weapons): ");
             var burstticks = (3600 / double.Parse(Console.ReadLine()));
             if (Double.IsInfinity(burstticks))
                 burstticks = 0;
@@ -43,23 +45,30 @@ namespace rimworld_dps_calc
             Console.Write("Warmup seconds: ");
             var warmup = double.Parse(Console.ReadLine()) * 60;
 
-            var maxdps = (dmg * burstcount) / ((cooldown + warmup + (burstticks * (burstcount - 1))) / 60);
-            var maxdpsrounded = RoundUp(maxdps, 2);
 
-            var dpsSharpPen = sharpPen * maxdpsrounded;
-            var dpsBluntPen = bluntPen * maxdpsrounded;
+            var maxdpsAimed = RoundUp((dmg * burstcount) / ((cooldown + warmup + (burstticks * (burstcount - 1))) / 60), 2);
+            var maxdpsSnapshot = RoundUp((dmg * (burstcount * 2)) / ((cooldown + warmup + (burstticks * ((burstcount * 2) - 1))) / 60), 2);
 
-            var results = $"{name} max DPS: {maxdpsrounded} | sharp PS: {dpsSharpPen} | blunt PS: {dpsBluntPen}";
+            var dpsSharpPenAimed = sharpPen * maxdpsAimed;
+            var dpsBluntPenAimed = bluntPen * maxdpsAimed;
+
+            var dpsSharpPenSnapshot = sharpPen * maxdpsSnapshot;
+            var dpsBluntPenSnapshot = bluntPen * maxdpsSnapshot;
+
+
+            var results = $"{index}) {name} base aim: {maxdpsAimed} snap: {maxdpsSnapshot} | " +
+                          $"sharp aim: {dpsSharpPenAimed} snap: {dpsSharpPenSnapshot} | " +
+                          $"blunt aim: {dpsBluntPenAimed} snap: {dpsBluntPenSnapshot}";
             PreviousEntries.Add(results);
 
-            // print results and previous results if any
-            Console.WriteLine(results);
+            
             foreach (var entry in PreviousEntries)
                 Console.WriteLine(entry);
 
             Console.ReadLine();
 
             Console.Clear();
+            index += 1;
             Calculate();
         }
 
