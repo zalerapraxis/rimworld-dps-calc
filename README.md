@@ -1,10 +1,6 @@
 # rimworld-dps-calc
 weapon dps calculator for rimworld CE guns
 
-Doesn't factor armor penetration stuff.
+Doesn't factor actual armor penetration calcs, but it doesn't need to since that's a constant across all guns.
 
-Armor in CE works as layers, and each layer is checked against the armor pen value of an incoming projectile. Each layer the projectile penetrates reduces the damage of the projectile. Since this would be a pain in the ass to model, and relies on knowing the armor values of the layers.
-
-I said nevermind all that and just multiplied the armor pen values by the base DPS to get an idea of what weapons might put out more overall penetration values per second.
-
-Also doesn't factor accuracy or increased warmup time in aimed mode.
+Has basic accuracy factoring, doesn't account for anything outside of a constant pawn aiming accuracy of 60%, roughly average in my current colony.
